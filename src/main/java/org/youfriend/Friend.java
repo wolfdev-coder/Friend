@@ -13,7 +13,7 @@ import java.sql.Statement;
 
 public final class Friend extends JavaPlugin {
     public static Connection connection;
-    public static String url = "jdbc:sqlite:plugins/HowAreYou/database.db";
+    public static String url = "jdbc:sqlite:plugins/Friend/database.db";
     public static String prefix = "&7Друзья"; 
     @Override
     public void onEnable() {
@@ -26,7 +26,7 @@ public final class Friend extends JavaPlugin {
     public void onLoad() {
         getServer().getLogger().info("Связываюсь с базой данных");
         try {
-            File file = new File("plugins/HowAreYou");
+            File file = new File("plugins/Friend");
             if (!file.exists()) {
                 file.mkdirs();
                 connection = DriverManager.getConnection(url);
