@@ -34,6 +34,7 @@ public class AddFriendCommand implements CommandExecutor {
                     stmt.close();
                     connection.close();
                     friendPlayer.sendMessage("Тебя пытаются добавить в друзья - " + commandSender.getName() +", ты согласен?");
+                    commandSender.sendMessage("Ты отправил заявку в друзья " + friendPlayer);
                 } catch (SQLException e) {
                     commandSender.sendMessage("Ошибка при добавлении друга: " + e.getMessage());
                 }
