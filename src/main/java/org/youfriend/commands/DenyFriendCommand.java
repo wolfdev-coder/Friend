@@ -1,5 +1,6 @@
 package org.youfriend.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -8,14 +9,14 @@ import org.youfriend.Friend;
 
 import java.sql.*;
 
-public class AcceptFriendCommand implements CommandExecutor {
+public class DenyFriendCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         if (!(commandSender instanceof Player)) {
             commandSender.sendMessage("беббе");
             return true;
         }
-        if (command.getName().equalsIgnoreCase("friendyes")) {
+        if (command.getName().equalsIgnoreCase("friendno")) {
             try {
                 Connection connection = DriverManager.getConnection(Friend.url);
                 String selectSql = "SELECT * FROM users WHERE nameFriend='" + commandSender.getName()+ "'";
@@ -26,23 +27,19 @@ public class AcceptFriendCommand implements CommandExecutor {
                     String youName = rs.getString("nameFriend");
                     if (commandSender.getName().equalsIgnoreCase(youName)) {
                         commandSender.sendMessage("Нашел в базе данных и вам действителньо предложили дружить! Принимаю запрос..");
-                        String sql = "INSERT INTO friends (namePlayer, nameFriend) VALUES ('" + boyName + "', '" + youName + "')";
-                        stm.execute(sql);
-                        commandSender.sendMessage("Теперь вы друзья с " + boyName);
-                        String del = "DELETE FROM users WHERE namePlayer='" + boyName + "'";
-                        stm.executeUpdate(del);
+                        stm.execute("DELETE FROM users WHERE nameFriend='" + commandSender.getName() + "'");
+                        commandSender.sendMessage("Ты отказался от дружбы с " + boyName);
+                        Player playerNo = Bukkit.getPlayerExact(boyName);
+                        if (playerNo != null) {
+                            playerNo.sendMessage(commandSender.getName() + " Отказался от дружбы с вами :(");
+                        }
                     }
                 }
-                else {
-                    commandSender.sendMessage("кажется у вас нету запросов");
-                }
-                rs.close();
-                stm.close();
-                connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+            } catch (SQLException exception) {
+                commandSender.sendMessage(exception.toString());
             }
         }
         return true;
+
     }
 }

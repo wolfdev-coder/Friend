@@ -3,6 +3,7 @@ package org.youfriend;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.youfriend.commands.AcceptFriendCommand;
 import org.youfriend.commands.AddFriendCommand;
+import org.youfriend.commands.DenyFriendCommand;
 
 import java.io.File;
 import java.sql.Connection;
@@ -13,11 +14,13 @@ import java.sql.Statement;
 public final class Friend extends JavaPlugin {
     public static Connection connection;
     public static String url = "jdbc:sqlite:plugins/HowAreYou/database.db";
+    public static String prefix = "&7Друзья"; 
     @Override
     public void onEnable() {
         getLogger().info("Загрузился");
         getServer().getPluginCommand("addfriend").setExecutor(new AddFriendCommand());
         getServer().getPluginCommand("friendyes").setExecutor(new AcceptFriendCommand());
+        getServer().getPluginCommand("friendno").setExecutor(new DenyFriendCommand());
     }
     @Override
     public void onLoad() {

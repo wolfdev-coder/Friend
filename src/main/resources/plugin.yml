@@ -6,6 +6,18 @@ commands:
   addfriend:
     description: add freind
     usage: /<command> <friendName>
+    aliases:
+      - friend add
+      - f add
   friendyes:
     description: accept friend
     usage: /<command>
+    aliases:
+      - friend accept
+      - friend yes
+  friendno:
+    description: deny friend
+    usage: /<command>
+    aliases:
+      - friend deny
+      - friend no
