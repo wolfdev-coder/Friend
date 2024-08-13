@@ -12,7 +12,7 @@ public class AcceptFriendCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage("беббе");
+            commandSender.sendMessage("Еррор, ток игроком можно");
             return true;
         }
         try {
@@ -24,16 +24,15 @@ public class AcceptFriendCommand implements CommandExecutor {
                 String boyName = rs.getString("namePlayer");
                 String youName = rs.getString("nameFriend");
                 if (commandSender.getName().equalsIgnoreCase(youName)) {
-                    commandSender.sendMessage("Нашел в базе данных и вам действителньо предложили дружить! Принимаю запрос..");
                     String sql = "INSERT INTO friends (namePlayer, nameFriend) VALUES ('" + boyName + "', '" + youName + "')";
                     stm.execute(sql);
                     commandSender.sendMessage("Теперь вы друзья с " + boyName);
-                    String del = "DELETE FROM users WHERE namePlayer='" + boyName + "'";
+                    String del = "DELETE FROM users WHERE namePlayer='" + boyName + "', nameFriend='" + youName+ "'";
                     stm.executeUpdate(del);
                 }
             }
             else {
-                commandSender.sendMessage("кажется у вас нету запросов");
+                commandSender.sendMessage("Кажется у вас нету запросов");
             }
             rs.close();
             stm.close();

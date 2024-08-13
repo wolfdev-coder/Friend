@@ -1,5 +1,6 @@
 package org.youfriend;
 
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.youfriend.commands.AcceptFriendCommand;
 import org.youfriend.commands.AddFriendCommand;
@@ -16,7 +17,7 @@ import java.util.Arrays;
 public final class Friend extends JavaPlugin {
     public static Connection connection;
     public static String url = "jdbc:sqlite:plugins/Friend/database.db";
-    public static String prefix = "&7Друзья"; 
+    public static String prefix = "&eДрузья &7>> &f";
     @Override
     public void onEnable() {
         getLogger().info("Загрузился");
@@ -42,7 +43,7 @@ public final class Friend extends JavaPlugin {
                 stmt.execute(query2);
                 stmt.close();
                 connection.close();
-                getLogger().info("База данных успешно создана!");
+                getLogger().info("База данных успешно создана!" + ChatColor.DARK_AQUA);
             }
             else {
                 connection = DriverManager.getConnection(url);
@@ -51,7 +52,7 @@ public final class Friend extends JavaPlugin {
                 stmt.execute(query);
                 String query2 = "CREATE TABLE if not exists 'friends' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'namePlayer' text, 'nameFriend' text);";
                 stmt.execute(query2);
-                getLogger().info("&aПодключился к базе данных успешно!");
+                getLogger().info("Подключился к базе данных успешно!" + ChatColor.GREEN);
             }
 
         } catch (SQLException e) {
