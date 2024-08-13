@@ -26,8 +26,8 @@ public class AcceptFriendCommand implements CommandExecutor {
                 if (commandSender.getName().equalsIgnoreCase(youName)) {
                     String sql = "INSERT INTO friends (namePlayer, nameFriend) VALUES ('" + boyName + "', '" + youName + "')";
                     stm.execute(sql);
-                    commandSender.sendMessage("Теперь вы друзья с " + boyName);
-                    String del = "DELETE FROM users WHERE namePlayer='" + boyName + "', nameFriend='" + youName+ "'";
+                    commandSender.sendMessage(Friend.prefix+"Теперь вы друзья с " + boyName);
+                    String del = "DELETE FROM users WHERE namePlayer='" + commandSender.getName() + "' AND nameFriend='" + youName + "'";
                     stm.executeUpdate(del);
                 }
             }

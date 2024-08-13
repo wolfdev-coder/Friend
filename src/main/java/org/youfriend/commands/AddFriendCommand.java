@@ -1,6 +1,7 @@
 package org.youfriend.commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -33,7 +34,7 @@ public class AddFriendCommand implements CommandExecutor {
                     stmt.executeUpdate();
                     stmt.close();
                     connection.close();
-                    friendPlayer.sendMessage(Friend.prefix+"Тебя пытаются добавить в друзья - " + commandSender.getName() +", ты согласен?");
+                    friendPlayer.sendMessage(ChatColor.GREEN+Friend.prefix+"Тебя пытаются добавить в друзья - " + commandSender.getName() +", ты согласен?");
                     commandSender.sendMessage(Friend.prefix+"Ты отправил заявку в друзья " + friendPlayer.getName());
                 } catch (SQLException e) {
                     commandSender.sendMessage(Friend.prefix+"Ошибка при добавлении друга, Обратитесь к администрации");

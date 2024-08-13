@@ -17,7 +17,7 @@ import java.util.Arrays;
 public final class Friend extends JavaPlugin {
     public static Connection connection;
     public static String url = "jdbc:sqlite:plugins/Friend/database.db";
-    public static String prefix = "&eДрузья &7>> &f";
+    public static String prefix = ChatColor.YELLOW+"Друзья "+ ChatColor.GRAY + ">> " + ChatColor.GREEN;
     @Override
     public void onEnable() {
         getLogger().info("Загрузился");
@@ -43,7 +43,7 @@ public final class Friend extends JavaPlugin {
                 stmt.execute(query2);
                 stmt.close();
                 connection.close();
-                getLogger().info("База данных успешно создана!" + ChatColor.DARK_AQUA);
+                getLogger().info(prefix +ChatColor.LIGHT_PURPLE+"База данных успешно создана!");
             }
             else {
                 connection = DriverManager.getConnection(url);
@@ -52,7 +52,7 @@ public final class Friend extends JavaPlugin {
                 stmt.execute(query);
                 String query2 = "CREATE TABLE if not exists 'friends' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'namePlayer' text, 'nameFriend' text);";
                 stmt.execute(query2);
-                getLogger().info("Подключился к базе данных успешно!" + ChatColor.GREEN);
+                getLogger().info(prefix+"Подключился к базе данных успешно!");
             }
 
         } catch (SQLException e) {

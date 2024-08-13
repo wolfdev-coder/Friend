@@ -25,7 +25,7 @@ public class DenyFriendCommand implements CommandExecutor {
                 String boyName = rs.getString("namePlayer");
                 String youName = rs.getString("nameFriend");
                 if (commandSender.getName().equalsIgnoreCase(youName)) {
-                    stm.execute("DELETE FROM users WHERE nameFriend='" + commandSender.getName() + ", namePlayer='" + boyName + "'");
+                    stm.execute("DELETE FROM users WHERE nameFriend='" + commandSender.getName() + "' AND namePlayer='" + boyName + "'");
                     commandSender.sendMessage(Friend.prefix+"Ты отказался от дружбы с " + boyName);
                     Player playerNo = Bukkit.getPlayerExact(boyName);
                     if (playerNo != null) {
