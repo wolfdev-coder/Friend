@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public final class Friend extends JavaPlugin {
     public static Connection connection;
@@ -18,9 +20,12 @@ public final class Friend extends JavaPlugin {
     @Override
     public void onEnable() {
         getLogger().info("Загрузился");
-        getServer().getPluginCommand("addfriend").setExecutor(new AddFriendCommand());
+        getServer().getPluginCommand("friendadd").setExecutor(new AddFriendCommand());
+        getServer().getPluginCommand("friendadd").setAliases(Arrays.asList("friend add"));
         getServer().getPluginCommand("friendyes").setExecutor(new AcceptFriendCommand());
+        getServer().getPluginCommand("friendyes").setAliases(Arrays.asList("friend yes"));
         getServer().getPluginCommand("friendno").setExecutor(new DenyFriendCommand());
+        getServer().getPluginCommand("friendno").setAliases(Arrays.asList("friend no"));
     }
     @Override
     public void onLoad() {
@@ -46,7 +51,7 @@ public final class Friend extends JavaPlugin {
                 stmt.execute(query);
                 String query2 = "CREATE TABLE if not exists 'friends' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'namePlayer' text, 'nameFriend' text);";
                 stmt.execute(query2);
-                getLogger().info("База данных успешно создана!");
+                getLogger().info("&aПодключился к базе данных успешно!");
             }
 
         } catch (SQLException e) {

@@ -15,34 +15,33 @@ public class AcceptFriendCommand implements CommandExecutor {
             commandSender.sendMessage("беббе");
             return true;
         }
-        if (command.getName().equalsIgnoreCase("friendyes")) {
-            try {
-                Connection connection = DriverManager.getConnection(Friend.url);
-                String selectSql = "SELECT * FROM users WHERE nameFriend='" + commandSender.getName()+ "'";
-                Statement stm = connection.createStatement();
-                ResultSet rs = stm.executeQuery(selectSql);
-                if (rs.next()) {
-                    String boyName = rs.getString("namePlayer");
-                    String youName = rs.getString("nameFriend");
-                    if (commandSender.getName().equalsIgnoreCase(youName)) {
-                        commandSender.sendMessage("Нашел в базе данных и вам действителньо предложили дружить! Принимаю запрос..");
-                        String sql = "INSERT INTO friends (namePlayer, nameFriend) VALUES ('" + boyName + "', '" + youName + "')";
-                        stm.execute(sql);
-                        commandSender.sendMessage("Теперь вы друзья с " + boyName);
-                        String del = "DELETE FROM users WHERE namePlayer='" + boyName + "'";
-                        stm.executeUpdate(del);
-                    }
+        try {
+            Connection connection = DriverManager.getConnection(Friend.url);
+            String selectSql = "SELECT * FROM users WHERE nameFriend='" + commandSender.getName()+ "'";
+            Statement stm = connection.createStatement();
+            ResultSet rs = stm.executeQuery(selectSql);
+            if (rs.next()) {
+                String boyName = rs.getString("namePlayer");
+                String youName = rs.getString("nameFriend");
+                if (commandSender.getName().equalsIgnoreCase(youName)) {
+                    commandSender.sendMessage("Нашел в базе данных и вам действителньо предложили дружить! Принимаю запрос..");
+                    String sql = "INSERT INTO friends (namePlayer, nameFriend) VALUES ('" + boyName + "', '" + youName + "')";
+                    stm.execute(sql);
+                    commandSender.sendMessage("Теперь вы друзья с " + boyName);
+                    String del = "DELETE FROM users WHERE namePlayer='" + boyName + "'";
+                    stm.executeUpdate(del);
                 }
-                else {
-                    commandSender.sendMessage("кажется у вас нету запросов");
-                }
-                rs.close();
-                stm.close();
-                connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
+            else {
+                commandSender.sendMessage("кажется у вас нету запросов");
+            }
+            rs.close();
+            stm.close();
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
+
         return true;
     }
 }

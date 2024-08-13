@@ -1,23 +1,22 @@
-name: Friend
-version: '1.0-BETA'
-main: org.youfriend.Friend
-api-version: '1.21'
-commands:
-  addfriend:
-    description: add freind
-    usage: /<command> <friendName>
-    aliases:
-      - friend add
-      - f add
-  friendyes:
-    description: accept friend
-    usage: /<command>
-    aliases:
-      - friend accept
-      - friend yes
-  friendno:
-    description: deny friend
-    usage: /<command>
-    aliases:
-      - friend deny
-      - friend no
+  name: Friend
+  version: '1.0-BETA'
+  main: org.youfriend.Friend
+  api-version: '1.21'
+  commands:
+    friendadd:
+      description: friendadd
+      usage: /<command> <friendName>
+      aliases:
+        - friend add
+    friendyes:
+      description: accept friend
+      usage: /<command>
+      aliases:
+        - friend accept
+        - friend yes
+    friendno:
+      description: deny friend
+      usage: /<command>
+      aliases:
+        - friend deny
+        - friend no
