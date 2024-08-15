@@ -33,6 +33,12 @@ public class DenyFriendCommand implements CommandExecutor {
                     }
                 }
             }
+            else {
+                commandSender.sendMessage(Friend.prefix + "У тебя нету запросов в друзья... Ты кто?");
+            }
+            stm.close();
+            rs.close();
+            connection.close();
         } catch (SQLException exception) {
             commandSender.sendMessage(exception.toString());
         }

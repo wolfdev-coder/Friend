@@ -3,20 +3,27 @@
   main: org.youfriend.Friend
   api-version: '1.21'
   commands:
-    friendadd:
-      description: friendadd
-      usage: /<command> <friendName>
+    #friendadd:
+     # description: friendadd
+ #     usage: /<command> <friendName>
+ #   friendyes:
+ #     description: accept friend
+ #     usage: /<command>
+ #   friendno:
+ #     description: deny friend
+ #     usage: /<command>
+ #   friendremove:
+ #     description: deny friend
+ #     usage: /<command> <friendName>
+ #   friendlist:
+ #     description: deny friend
+ #     usage: /<command> <friendName>
+    friend:
+      description: all friend commands use
+      usage: /<command> <action>
       aliases:
         - friend add
-    friendyes:
-      description: accept friend
-      usage: /<command>
-      aliases:
+        - friend list
+        - friend remove
         - friend accept
-        - friend yes
-    friendno:
-      description: deny friend
-      usage: /<command>
-      aliases:
         - friend deny
-        - friend no
