@@ -152,7 +152,107 @@ public class AllCommandsMain implements CommandExecutor {
                 catch (SQLException e) {
                 }
             }
+            else if (action.equalsIgnoreCase("sendmail")) {
+                try {
+                    String playerReader = strings[1];
+                    StringBuilder messages = new StringBuilder();
+                    for (int i = 2; i < strings.length; i++) {
+                        messages.append(strings[i]).append(" ");
+                    }
+                    String message = messages.toString().trim();
+                    if (playerReader != null && message != null) {
+                        Connection connection = DriverManager.getConnection(Friend.url);
+                        PreparedStatement stm = connection.prepareStatement("SELECT * FROM friends WHERE namePlayer=? AND nameFriend=?");
+                        stm.setString(1, commandSender.getName());
+                        stm.setString(2, playerReader);
+                        ResultSet rs = stm.executeQuery();
+                        if (rs.next()) {
+                            PreparedStatement stm2 = connection.prepareStatement("INSERT INTO mail (nameSender, nameReader, message) VALUES (?,?,?)");
+                            stm2.setString(1, commandSender.getName());
+                            stm2.setString(2, playerReader);
+                            stm2.setString(3, message);
+                            stm2.executeUpdate();
+                            stm2.close();
+                            commandSender.sendMessage(Friend.prefix+"Вы отправили сообщение другу " + ChatColor.LIGHT_PURPLE + playerReader + ChatColor.GRAY+"\nВаше сообщение: " + ChatColor.LIGHT_PURPLE + message);
+                            Player friend = Bukkit.getPlayerExact(playerReader);
+                            if (friend !=null) {
+                                friend.sendMessage(Friend.prefix+"Вы получили письмо от своего друга " + ChatColor.LIGHT_PURPLE + commandSender.getName() + ChatColor.GRAY + "\nЧтобы его прочитать введите " + ChatColor.LIGHT_PURPLE + "/friend readmail " + commandSender.getName());
+                            }
+                        }
+                        stm.close();
+                        rs.close();
+                        connection.close();
+                    }
+                }
+                catch (SQLException exception) {}
+            }
+            else if (action.equalsIgnoreCase("readmail")) {
+                String response = Friend.prefix + "у вас нет сообщений..";
+                if (strings.length == 2) {
+                    String writer = strings[1];
+                    try (Connection connection = DriverManager.getConnection(Friend.url);
+                         PreparedStatement stm = connection.prepareStatement(getQuery(writer))) {
+                        if (writer != null) {
+                            stm.setString(1, writer);
+                            stm.setString(2, commandSender.getName());
+                        }
+                        try (ResultSet rs = stm.executeQuery()) {
+                            int countMessage = 1;
+                            while (rs.next()) {
+                                String sender = rs.getString("nameSender");
+                                String message = rs.getString("message");
+                                commandSender.sendMessage(Friend.prefix + countMessage + ") Сообщение от " + ChatColor.LIGHT_PURPLE+ sender + ChatColor.GRAY+" >> " + message);
+                                countMessage++;
+                                deleteMessage(connection, sender, commandSender.getName(), message);
+                                response = Friend.prefix + "Вы прочитали все сообщения!";
+                            }
+                        }
+                        commandSender.sendMessage(response);
+                    } catch (SQLException e) {
+                        System.out.printf("Error reading mail", e);
+                    }
+                }
+                else if (strings.length < 2) {
+                    try (Connection connection = DriverManager.getConnection(Friend.url)) {
+                        try (PreparedStatement stm = connection.prepareStatement("SELECT * FROM mail WHERE nameReader=?")) {
+                            stm.setString(1,commandSender.getName());
+                            try (ResultSet rs = stm.executeQuery()) {
+                                int countMessage = 1;
+                                while (rs.next()) {
+                                    String sender = rs.getString("nameSender");
+                                    String message = rs.getString("message");
+                                    commandSender.sendMessage(Friend.prefix + countMessage + ") Сообщение от " + ChatColor.LIGHT_PURPLE+ sender + ChatColor.GRAY+" >> " + message);
+                                    countMessage++;
+                                    deleteMessage(connection, sender, commandSender.getName(), message);
+                                    response = Friend.prefix + "Вы прочитали все сообщения!";
+                                }
+                                commandSender.sendMessage(response);
+                            }
+                        }
+                    } catch (SQLException e) {
+                        System.out.printf("Error reading mail", e);
+                    }
+                }
+            }
         }
         return true;
     }
+    private String getQuery(String writer) {
+        if (writer != null) {
+            return "SELECT * FROM mail WHERE nameSender=? AND nameReader=?";
+        } else {
+            return "SELECT * FROM mail WHERE nameReader=?";
+        }
+    }
+
+    private void deleteMessage(Connection connection, String sender, String reader, String message) throws SQLException {
+        try (PreparedStatement deleteStm = connection.prepareStatement("DELETE FROM mail WHERE nameSender=? AND nameReader=? AND message=?")) {
+            deleteStm.setString(1, sender);
+            deleteStm.setString(2, reader);
+            deleteStm.setString(3, message);
+            deleteStm.executeUpdate();
+        }
+    }
 }
+
+

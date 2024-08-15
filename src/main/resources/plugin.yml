@@ -27,3 +27,5 @@
         - friend remove
         - friend accept
         - friend deny
+        - friend sendmail
+        - friend readmail
