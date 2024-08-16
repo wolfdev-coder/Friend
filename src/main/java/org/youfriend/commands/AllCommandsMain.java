@@ -273,6 +273,16 @@ public class AllCommandsMain implements CommandExecutor {
 
     public void createPlayerHeadMenu(Player viewer) {
         Inventory menu = Bukkit.createInventory(null, 9, "&aДрузья");
+        updateMenu(viewer, menu);
+        viewer.openInventory(menu);
+
+        // Schedule the task to run every 5 seconds
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            updateMenu(viewer, menu);
+        }, 0, 5, TimeUnit.SECONDS);
+    }
+
+    private void updateMenu(Player viewer, Inventory menu) {
         try (Connection connection = DriverManager.getConnection(Friend.url);
              PreparedStatement stm = connection.prepareStatement("SELECT * FROM friends WHERE namePlayer = ?")) {
             stm.setString(1, viewer.getName());
@@ -291,9 +301,8 @@ public class AllCommandsMain implements CommandExecutor {
                 }
             }
         } catch (SQLException e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Error creating player head menu", e);
+            Bukkit.getLogger().log(Level.SEVERE, "Error updating player head menu", e);
         }
-        viewer.openInventory(menu);
     }
 
     private ItemStack createHeadItem(String friendName, Player friendPlayer) {
