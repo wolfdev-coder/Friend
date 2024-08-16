@@ -2,15 +2,26 @@ package org.youfriend.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.util.ChatPaginator;
+import org.joml.FrustumIntersection;
 import org.youfriend.Friend;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 public class AllCommandsMain implements CommandExecutor {
     @Override
@@ -187,7 +198,7 @@ public class AllCommandsMain implements CommandExecutor {
                 catch (SQLException exception) {}
             }
             else if (action.equalsIgnoreCase("readmail")) {
-                String response = Friend.prefix + "у вас нет сообщений..";
+                String response = Friend.prefix + "У вас нет сообщений..";
                 if (strings.length == 2) {
                     String writer = strings[1];
                     try (Connection connection = DriverManager.getConnection(Friend.url);
@@ -234,6 +245,12 @@ public class AllCommandsMain implements CommandExecutor {
                     }
                 }
             }
+            else if (action == null || action.equalsIgnoreCase("menu")) {
+                commandSender.sendMessage(Friend.prefix+"Открываю меню");
+                Player player = (Player) commandSender;
+                createPlayerHeadMenu(player);
+            }
+
         }
         return true;
     }
@@ -253,6 +270,66 @@ public class AllCommandsMain implements CommandExecutor {
             deleteStm.executeUpdate();
         }
     }
+
+    public void createPlayerHeadMenu(Player viewer) {
+        Inventory menu = Bukkit.createInventory(null, 9, "&aДрузья");
+        try (Connection connection = DriverManager.getConnection(Friend.url);
+             PreparedStatement stm = connection.prepareStatement("SELECT * FROM friends WHERE namePlayer = ?")) {
+            stm.setString(1, viewer.getName());
+            try (ResultSet rs = stm.executeQuery()) {
+                if (rs.next()) {
+                    ItemStack[] contents = new ItemStack[9];
+                    int i = 0;
+                    do {
+                        String friend = rs.getString("nameFriend");
+                        Player friendPlayer = Bukkit.getPlayerExact(friend);
+                        ItemStack headItem = createHeadItem(friend, friendPlayer);
+                        contents[i] = headItem;
+                        i++;
+                    } while (rs.next());
+                    menu.setContents(contents);
+                }
+            }
+        } catch (SQLException e) {
+            Bukkit.getLogger().log(Level.SEVERE, "Error creating player head menu", e);
+        }
+        viewer.openInventory(menu);
+    }
+
+    private ItemStack createHeadItem(String friendName, Player friendPlayer) {
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        ItemMeta meta = head.getItemMeta();
+        meta.setDisplayName(ChatColor.GREEN + friendName);
+        List<String> lore;
+        if (friendPlayer != null) {
+            lore = getCoordinatesLore(friendPlayer);
+        } else {
+            lore = getDefaultLore();
+        }
+        meta.setLore(lore);
+        head.setItemMeta(meta);
+        return head;
+
+    }
+
+    private List<String> getCoordinatesLore(Player player) {
+        return List.of(
+                ChatColor.WHITE+"Координаты:",
+                String.format(ChatColor.GRAY+"X: %.2f", player.getLocation().getX()),
+                String.format(ChatColor.GRAY+"Y: %.2f", player.getLocation().getY()),
+                String.format(ChatColor.GRAY+"Z: %.2f", player.getLocation().getZ())
+        );
+    }
+
+    private List<String> getDefaultLore() {
+        return List.of(
+                ChatColor.WHITE+"Координаты:",
+                ChatColor.GRAY+"X: 0",
+                ChatColor.GRAY+"Y: 0",
+                ChatColor.GRAY+"Z: 0"
+        );
+    }
+
 }
 
 

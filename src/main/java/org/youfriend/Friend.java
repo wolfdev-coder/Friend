@@ -73,20 +73,10 @@ public final class Friend extends JavaPlugin implements Listener {
             stm.setString(1, event.getPlayer().getName());
             try (ResultSet result = stm.executeQuery()) {
                 if (result.next()) {
-                    try {
-                        Thread.sleep(10000);
-                    }
-                    catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
                     event.getPlayer().sendMessage(prefix + "У вас есть новые сообщения от друзей\nЧтобы прочитать, введите: " + ChatColor.LIGHT_PURPLE + "/friend readmail");
                     System.out.println(prefix + "У вас есть новые сообщения от друзей\nЧтобы прочитать, введите: " + ChatColor.LIGHT_PURPLE + "/friend readmail");
 
                 } else {
-                    try{Thread.sleep(10000);}
-                    catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
                     event.getPlayer().sendMessage(prefix + "У вас нет новых сообщений от друзей");
                     System.out.println(prefix + "У вас нет новых сообщений от друзей");
                 }
