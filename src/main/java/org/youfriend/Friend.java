@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.youfriend.commands.*;
@@ -85,4 +86,13 @@ public final class Friend extends JavaPlugin implements Listener {
             getLogger().severe("Error checking mail for player " + event.getPlayer().getName() + ": " + e.getMessage());
         }
     }
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        // Check if the clicked inventory is the friend menu
+        if (event.getView().getTitle().equals("&aДрузья")) {
+            // Cancel the event to prevent item removal
+            event.setCancelled(true);
+        }
+    }
+
 }
