@@ -11,6 +11,7 @@ import org.youfriend.commands.*;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +33,7 @@ public final class Friend extends JavaPlugin implements Listener {
     }
     @Override
     public void onLoad() {
+
         getLogger().info(prefix+Color.WHITE+"Связываюсь с базой данных");
         try {
             File file = new File("plugins/Friend");
@@ -41,7 +43,7 @@ public final class Friend extends JavaPlugin implements Listener {
                 Statement stmt = connection.createStatement();
                 String query = "CREATE TABLE if not exists 'users' ('idPlayer' INTEGER PRIMARY KEY AUTOINCREMENT, 'namePlayer' text, 'nameFriend' text);";
                 stmt.execute(query);
-                String query2 = "CREATE TABLE if not exists 'friends' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'namePlayer' text, 'nameFriend' text);";
+                String query2 = "CREATE TABLE if not exists 'friends' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'namePlayer' text, 'nameFriend' text, 'zenlyPermFriend' integer DEFAULT '0' NOT NULL);";
                 String query3 = "CREATE TABLE if not exists 'mail' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'nameSender' text, 'nameReader' text, 'message' text);";
                 stmt.execute(query2);
                 stmt.execute(query3);
@@ -53,7 +55,7 @@ public final class Friend extends JavaPlugin implements Listener {
                 Statement stmt = connection.createStatement();
                 String query = "CREATE TABLE if not exists 'users' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'namePlayer' text, 'nameFriend' text);";
                 stmt.execute(query);
-                String query2 = "CREATE TABLE if not exists 'friends' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'namePlayer' text, 'nameFriend' text);";
+                String query2 = "CREATE TABLE if not exists 'friends' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'namePlayer' text, 'nameFriend' text, 'zenlyPermFriend' integer);";
                 String query3 = "CREATE TABLE if not exists 'mail' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'nameSender' text, 'nameReader' text, 'message' text);";
                 stmt.execute(query2);
                 stmt.execute(query3);
@@ -89,7 +91,7 @@ public final class Friend extends JavaPlugin implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         // Check if the clicked inventory is the friend menu
-        if (event.getView().getTitle().equals("&aДрузья")) {
+        if (event.getView().getTitle().equals("Друзья")) {
             // Cancel the event to prevent item removal
             event.setCancelled(true);
         }

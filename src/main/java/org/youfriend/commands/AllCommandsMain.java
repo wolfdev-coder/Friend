@@ -245,10 +245,33 @@ public class AllCommandsMain implements CommandExecutor {
                     }
                 }
             }
-            else if (action == null || action.equalsIgnoreCase("menu")) {
+            else if (action.length() < 1 || action.equalsIgnoreCase("menu")) {
                 commandSender.sendMessage(Friend.prefix+"Открываю меню");
                 Player player = (Player) commandSender;
                 createPlayerHeadMenu(player);
+            }
+            else if (action.equalsIgnoreCase("zenly")) {
+                try (Connection connection = DriverManager.getConnection(Friend.url);
+                     PreparedStatement stm = connection.prepareStatement("SELECT * FROM friends WHERE nameFriend=?")) {
+                    stm.setString(1, commandSender.getName());
+                    try (ResultSet fStep = stm.executeQuery()) {
+                        if (fStep.next()) {
+                            int permZenly = fStep.getInt("zenlyPermFriend");
+                            try (PreparedStatement stm2 = connection.prepareStatement("UPDATE friends SET zenlyPermFriend=? WHERE nameFriend=?")) {
+                                stm2.setString(1, permZenly == 0 ? "1" : "0");
+                                stm2.setString(2, commandSender.getName());
+                                stm2.execute();
+                                String status = permZenly == 0 ? ChatColor.DARK_GREEN + " Включил"+ ChatColor.GRAY : ChatColor.RED + " Выключил" + ChatColor.GRAY;
+                                commandSender.sendMessage(Friend.prefix + "Ты" + status + " Зенли мод");
+                            }
+                        } else {
+                            commandSender.sendMessage(Friend.prefix + "У вас нет друзей чтобы включать/выключать Зенли мод :(");
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.err.println("Error updating zenly perm: " + e.getMessage());
+                    commandSender.sendMessage(Friend.prefix + "Ошибка: " + e.getMessage());
+                }
             }
 
         }
@@ -272,14 +295,14 @@ public class AllCommandsMain implements CommandExecutor {
     }
 
     public void createPlayerHeadMenu(Player viewer) {
-        Inventory menu = Bukkit.createInventory(null, 9, "&aДрузья");
+        Inventory menu = Bukkit.createInventory(null, 9, "Друзья");
         updateMenu(viewer, menu);
         viewer.openInventory(menu);
 
         // Schedule the task to run every 5 seconds
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             updateMenu(viewer, menu);
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 0, 3, TimeUnit.SECONDS);
     }
 
     private void updateMenu(Player viewer, Inventory menu) {
@@ -292,8 +315,9 @@ public class AllCommandsMain implements CommandExecutor {
                     int i = 0;
                     do {
                         String friend = rs.getString("nameFriend");
+                        int friendZenlyPerm = rs.getInt("zenlyPermFriend");
                         Player friendPlayer = Bukkit.getPlayerExact(friend);
-                        ItemStack headItem = createHeadItem(friend, friendPlayer);
+                        ItemStack headItem = createHeadItem(friend, friendPlayer, friendZenlyPerm);
                         contents[i] = headItem;
                         i++;
                     } while (rs.next());
@@ -305,12 +329,12 @@ public class AllCommandsMain implements CommandExecutor {
         }
     }
 
-    private ItemStack createHeadItem(String friendName, Player friendPlayer) {
+    private ItemStack createHeadItem(String friendName, Player friendPlayer, int perm) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta meta = head.getItemMeta();
         meta.setDisplayName(ChatColor.GREEN + friendName);
         List<String> lore;
-        if (friendPlayer != null) {
+        if (friendPlayer != null && perm > 0) {
             lore = getCoordinatesLore(friendPlayer);
         } else {
             lore = getDefaultLore();
@@ -332,7 +356,7 @@ public class AllCommandsMain implements CommandExecutor {
 
     private List<String> getDefaultLore() {
         return List.of(
-                ChatColor.WHITE+"Координаты:",
+                ChatColor.WHITE+"Координаты: " + ChatColor.RED+"(Отключены)",
                 ChatColor.GRAY+"X: 0",
                 ChatColor.GRAY+"Y: 0",
                 ChatColor.GRAY+"Z: 0"
